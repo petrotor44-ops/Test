@@ -58,6 +58,26 @@ EXPANSIONS: dict[str, tuple[str, ...]] = {
     "logged": ("record", "readings"),
 }
 
+MEASUREMENT_RE = re.compile(
+    r"\b(?P<value>\d+(?:\.\d+)?)\s*"
+    r"(?P<unit>"
+    r"bar|m3/h|m3/min|kw|mm/s(?:\s+rms)?|rms|"
+    r"operating\s+hours|hours?|months?|years?|days?|minutes?|seconds?|"
+    r"degrees\s+celsius|celsius"
+    r")\b",
+    re.IGNORECASE,
+)
+
+VAGUE_VALUE_RE = re.compile(
+    r"\b("
+    r"fixed intervals?|regular intervals?|periodic(?:ally)?|routine(?:ly)?|"
+    r"as needed|within tolerance|within range|within rating|"
+    r"below (?:the )?limit|above (?:the )?limit|minimum stock|baseline readings|"
+    r"per (?:the )?equipment sheet|according to (?:the )?datasheet"
+    r")\b",
+    re.IGNORECASE,
+)
+
 def normalize(text: str) -> str:
     """Normalize text for matching while preserving technical tokens."""
     text = text.replace("—", "-").replace("–", "-").replace("/", " / ")
@@ -104,3 +124,84 @@ def contains_concrete_number(text: str) -> bool:
     if NUMBER_UNIT_RE.search(text):
         return True
     return bool(re.search(r"\b(?:daily|monthly|yearly|annually|weekly)\b", text, re.IGNORECASE))
+
+
+def split_sentences(text: str) -> list[str]:
+    """Split normalized technical prose into simple sentence-like units."""
+    return [s.strip() for s in re.split(r"(?<=[.!?])\s+", normalize(text)) if s.strip()]
+
+
+def normalize_unit(unit: str) -> str:
+    """Normalize common technical/time units for comparison."""
+    unit = normalize(unit).lower().strip()
+    return {
+        "kw": "kW",
+        "bar": "bar",
+        "m3/h": "m3/h",
+        "m3/min": "m3/min",
+        "mm/s": "mm/s",
+        "mm/s rms": "mm/s RMS",
+        "rms": "RMS",
+        "hour": "hour",
+        "hours": "hour",
+        "operating hour": "operating hour",
+        "operating hours": "operating hour",
+        "month": "month",
+        "months": "month",
+        "year": "year",
+        "years": "year",
+        "day": "day",
+        "days": "day",
+        "minute": "minute",
+        "minutes": "minute",
+        "second": "second",
+        "seconds": "second",
+        "degree celsius": "degree Celsius",
+        "degrees celsius": "degree Celsius",
+        "celsius": "degree Celsius",
+    }.get(unit, unit)
+
+
+def normalize_number(value: str) -> str:
+    """Normalize numeric strings so 12 and 12.0 compare equal."""
+    number = float(value)
+    return str(int(number)) if number.is_integer() else str(number)
+
+
+def canonical_for_similarity(text: str) -> str:
+    """Normalize text for duplicate detection while hiding IDs and exact numbers."""
+    text = normalize(text).lower()
+    text = re.sub(r"\b\d+(?:\.\d+)?\b", "<num>", text)
+    text = ENTITY_RE.sub("<entity>", text)
+    return text
+
+
+def attribute_key(sentence: str, value_start: int, *, window: int = 4) -> str:
+    """Build a compact attribute key from the terms immediately before a value."""
+    prefix = sentence[:value_start]
+    prefix = ENTITY_RE.sub(" ", prefix)
+    prefix = re.sub(r"\b\d+(?:\.\d+)?\b", " ", prefix)
+    tokens = tokenize(prefix, expand=True, keep_stopwords=False)
+    return " ".join(tokens[-window:])
+
+
+def extract_measurements(sentence: str) -> list[tuple[str, str, str, int]]:
+    """Extract normalized measurements as value, unit, raw matched text, start offset."""
+    measurements: list[tuple[str, str, str, int]] = []
+    for match in MEASUREMENT_RE.finditer(sentence):
+        value = normalize_number(match.group("value"))
+        unit = normalize_unit(match.group("unit"))
+        measurements.append((value, unit, match.group(0), match.start()))
+    return measurements
+
+
+def contains_vague_value_claim(text: str) -> bool:
+    """True when text implies a value/threshold/cadence but does not state one concretely."""
+    return bool(VAGUE_VALUE_RE.search(text)) and not contains_concrete_number(text)
+
+
+def jaccard_similarity(left: set[str], right: set[str]) -> float:
+    """Return Jaccard similarity for two token sets."""
+    if not left or not right:
+        return 0.0
+    return len(left & right) / len(left | right)
