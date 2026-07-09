@@ -51,7 +51,7 @@ class RetrievalHit:
         docs: list[Document],
         *,
         chunk_size: int = CHUNK_SIZE,
-        embed_model: str = "all-MiniLM-L6-v2",
+        embed_model: str = EMBED_MODEL,
     ) -> None:
         self.chunks = fixed_char_chunks(docs, size=chunk_size)
         self.model = SentenceTransformer(embed_model)
