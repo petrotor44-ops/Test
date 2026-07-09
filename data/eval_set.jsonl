@@ -1,0 +1,21 @@
+{"id":"Q01","query":"What is the rated output of the C-100 compressor?","answerable":true,"expected_docs":["DOC-03"],"must_contain":["6 m3/min","8 bar"]}
+{"id":"Q02","query":"How often should thermal probes be calibrated?","answerable":true,"expected_docs":["DOC-10"],"must_contain":["12 months"]}
+{"id":"Q03","query":"What should be checked before starting the M-50 motor?","answerable":true,"expected_docs":["DOC-04"],"must_contain":["isolation switch","insulation resistance","coupling guard"]}
+{"id":"Q04","query":"What is the vibration threshold for F-30 fan imbalance investigation?","answerable":true,"expected_docs":["DOC-05","DOC-06"],"must_contain":["4.5 mm/s RMS"]}
+{"id":"Q05","query":"What does E-207 mean and what should be inspected before restart?","answerable":true,"expected_docs":["DOC-07"],"must_contain":["overpressure trip","pressure relief valve","blocked discharge line"]}
+{"id":"Q06","query":"When should BRG-4410 be replaced?","answerable":true,"expected_docs":["DOC-09"],"must_contain":["12000 operating hours"]}
+{"id":"Q07","query":"What is the maintenance cadence for compressors?","answerable":true,"expected_docs":["DOC-12"],"must_contain":["4000 hours"]}
+{"id":"Q08","query":"Which code indicates a dry-run condition?","answerable":true,"expected_docs":["DOC-07"],"must_contain":["E-208"]}
+{"id":"Q09","query":"How should duplicate telemetry messages be handled?","answerable":true,"expected_docs":["DOC-16"],"must_contain":["duplicates","not counted twice"]}
+{"id":"Q10","query":"What commissioning checks are required at first run?","answerable":true,"expected_docs":["DOC-13"],"must_contain":["nameplate data","correct rotation","alignment","vibration"]}
+{"id":"Q11","query":"Which process is used to buy replacement parts?","answerable":true,"expected_docs":["DOC-15"],"must_contain":["part number","check stock","request"]}
+{"id":"Q12","query":"What must be done before maintenance to prove equipment cannot operate?","answerable":true,"expected_docs":["DOC-11"],"must_contain":["isolate","lock","tag","zero energy","start control"]}
+{"id":"Q13","query":"What is the P-200 nominal flow rate?","answerable":true,"expected_docs":["DOC-01"],"must_contain":["40 m3/h"]}
+{"id":"Q14","query":"What are the emergency shutdown steps?","answerable":true,"expected_docs":["DOC-14"],"must_contain":["emergency stop","main supply","shift supervisor"]}
+{"id":"Q15","query":"What is the maximum operating pressure of the P-200 pump?","answerable":true,"expected_docs":["DOC-01","DOC-02"],"must_contain":["16 bar","12 bar"],"expects_conflict":true}
+{"id":"Q16","query":"What oil type should be used for the C-100 compressor?","answerable":false,"expected_docs":[],"must_contain":[]}
+{"id":"Q17","query":"What is the serial number of the M-50 motor?","answerable":false,"expected_docs":[],"must_contain":[]}
+{"id":"Q18","query":"Who is the supplier for BRG-4410?","answerable":false,"expected_docs":[],"must_contain":[]}
+{"id":"Q19","query":"What is the exact interval for sensor data logging?","answerable":false,"expected_docs":[],"must_contain":[]}
+{"id":"Q20","query":"What is the minimum stock quantity for critical spares?","answerable":false,"expected_docs":[],"must_contain":[]}
+{"id":"Q21","query":"What is the numeric tolerance for temperature sensor calibration?","answerable":false,"expected_docs":[],"must_contain":[]}
